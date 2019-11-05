@@ -72,7 +72,7 @@ class StockLocation(models.Model):
 
     def _hardware_vertical_lift_tray(self, cell_location=None):
         payload = self._hardware_vertical_lift_tray_payload(cell_location)
-        res = self.vertical_lift_shuttle._hardware_send_message(payload)
+        res = self.vertical_lift_shuttle_id._hardware_send_message(payload)
         return res
 
     def _hardware_vertical_lift_tray_payload(self, cell_location=None):
