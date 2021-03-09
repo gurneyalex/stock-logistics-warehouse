@@ -22,8 +22,8 @@ class CubiscanWizardLine(models.TransientModel):
 
     def cubiscan_measure(self):
         self.ensure_one()
-        res = super().cubiscan_measure()
         if self.wizard_id.device_id.driver == "zipcube":
             self.scan_requested = True
             self.packaging_id.scan_device_id = self.wizard_id.device_id
+        res = super().cubiscan_measure()
         return res

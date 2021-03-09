@@ -32,9 +32,18 @@
                             name="cubiscan"
                             attrs="{'invisible': [('driver', '!=', 'cubiscan')]}"
                         >
-                            <field name="device_address" />
-                            <field name="port" />
-                            <field name="timeout" />
+                            <field
+                                name="device_address"
+                                attrs="{'required': [('driver', '=', 'cubiscan')]}"
+                            />
+                            <field
+                                name="port"
+                                attrs="{'required': [('driver', '=', 'cubiscan')]}"
+                            />
+                            <field
+                                name="timeout"
+                                attrs="{'required': [('driver', '=', 'cubiscan')]}"
+                            />
                         </group>
                         <group />
                     </group>

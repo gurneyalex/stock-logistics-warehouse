@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 import logging
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -42,8 +42,26 @@ class CubiscanDevice(models.Model):
                 "lngth": measures["length"],
                 "width": measures["width"],
                 "height": measures["height"],
-                "max_weight": measures["max_weight"],
+                "max_weight": measures["weight"],
             }
         )
         packaging.write({"scan_device_id": False})
+
+        # Shows a message to the user that created the wizard, indicating
+        # that the button 'refresh' must be pressed. We can't use the user
+        # set in the current environment because the user that attends the
+        # screen (that opened the wizard, thus created it) may be not the
+        # same than the one (artificial user) that scans and submits the
+        # data, e.g. by using an api call via a controller. We have to send
+        # this original user in the environment because notify_warning checks
+        # that you only notify a user which is the same than the one set in
+        # the environment.
+        with api.Environment.manage():
+            env = api.Environment(
+                self.env.cr, wizard_line.wizard_id.create_uid.id, self.env.context
+            )
+            wizard_line.wizard_id.create_uid.with_env(env).notify_warning(
+                message=_("Please, press the REFRESH button.")
+            )
+
         return to_update
