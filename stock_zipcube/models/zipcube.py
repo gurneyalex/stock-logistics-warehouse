@@ -2,13 +2,13 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 import logging
 
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
 
-class CubiscanDevice(models.Model):
+class ZipcubeDevice(models.Model):
     _inherit = "cubiscan.device"
 
     driver = fields.Selection(selection_add=[("zipcube", "Zipcube")])
@@ -56,12 +56,8 @@ class CubiscanDevice(models.Model):
         # this original user in the environment because notify_warning checks
         # that you only notify a user which is the same than the one set in
         # the environment.
-        with api.Environment.manage():
-            env = api.Environment(
-                self.env.cr, wizard_line.wizard_id.create_uid.id, self.env.context
-            )
-            wizard_line.wizard_id.create_uid.with_env(env).notify_warning(
-                message=_("Please, press the REFRESH button.")
-            )
+        wizard_line.wizard_id.create_uid.with_user(
+            wizard_line.wizard_id.create_uid.id
+        ).notify_warning(message=_("Please, press the REFRESH button."))
 
         return to_update

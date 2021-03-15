@@ -4,7 +4,7 @@
 from odoo import fields, models
 
 
-class CubiscanWizard(models.TransientModel):
+class ZipcubeWizard(models.TransientModel):
     _inherit = "cubiscan.wizard"
 
     def reload(self):
@@ -15,7 +15,7 @@ class CubiscanWizard(models.TransientModel):
     device_driver = fields.Selection(related="device_id.driver")
 
 
-class CubiscanWizardLine(models.TransientModel):
+class ZipcubeWizardLine(models.TransientModel):
     _inherit = "cubiscan.wizard.line"
 
     scan_requested = fields.Boolean()

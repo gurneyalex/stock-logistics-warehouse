@@ -26,8 +26,8 @@ class ZipcubeController(http.Controller):
             raise ValueError("the data format is incorrect")
         _logger.info("received %s", data)
         self._check_secret(data["secret"])
-        data = self._convert_floats(data)
         # convert the float values passed as strings to floats
+        data = self._convert_floats(data)
         cubiscan._update_packaging_measures(data)
         return True
 
@@ -48,12 +48,3 @@ class ZipcubeController(http.Controller):
             return True
         else:
             raise AccessError()
-
-
-TEST_STRING = """
-curl --header "Content-Type: application/json" \
-  --request POST \
-  --data '{"secret": "abcdefg", "barcode":"xyz", "weight": "12,3",'\
-  '"length": "123,1", "width": "456,5", "height": "789,2"}' \
-  https://integration.cosanum.odoo.camptocamp.ch/stock/zipcube/1/measurement
-"""
