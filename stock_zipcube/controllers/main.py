@@ -44,7 +44,7 @@ class ZipcubeController(http.Controller):
         return data
 
     def _check_secret(self, secret):
-        if secret == os.environ.get("ZIPCUBE_SECRET"):
+        if secret and secret == os.environ.get("ZIPCUBE_SECRET"):
             return True
         else:
             _logger.error(
