@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record model="ir.ui.view" id="view_zippcube_device_form">
+        <field name="name">zippcube.device.form</field>
+        <field name="model">zippcube.device</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        type="object"
+                        name="open_wizard"
+                        string="Wizard"
+                        class="oe_highlight"
+                    />
+                </header>
+                <sheet>
+                    <field name="id" invisible="1" />
+                    <group>
+                        <group name="device">
+                            <field name="name" />
+                            <field name="warehouse_id" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_zippcube_device_tree">
+        <field name="name">zippcube.device.tree</field>
+        <field name="model">zippcube.device</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="warehouse_id" />
+            </tree>
+        </field>
+    </record>
+    <record id="action_zippcube_device_form" model="ir.actions.act_window">
+        <field name="name">Zippcube Devices</field>
+        <field name="res_model">zippcube.device</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        action="action_zippcube_device_form"
+        id="menu_action_zippcube_device_form"
+        parent="stock.menu_warehouse_config"
+        sequence="2"
+    />
+</odoo>

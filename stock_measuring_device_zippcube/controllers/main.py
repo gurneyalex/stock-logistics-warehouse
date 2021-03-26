@@ -1,5 +1,5 @@
 # Copyright 2021 Camptocamp SA
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html)
 import logging
 import os
 
@@ -10,26 +10,39 @@ from odoo.http import request
 _logger = logging.getLogger(__name__)
 
 
-class ZipcubeController(http.Controller):
+class ZippcubeController(http.Controller):
     weight_keys = ("weight",)
     measures_keys = ("length", "width", "height")
     expected_keys = ("secret", "barcode") + weight_keys + measures_keys
 
-    @http.route("/stock/zipcube/<int:id_>/measurement", type="json", auth="none")
-    def measurement(self, id_):
-        env = request.env(su=True)
-        cubiscan = env["cubiscan.device"].browse(id_)
-        if not cubiscan:
-            raise MissingError(_("No such cubiscan"))
+    @http.route(
+        "/stock/zippcube/<string:zippcube_device_name>/measurement",
+        type="json",
+        auth="none",
+    )
+    def measurement(self, zippcube_device_name):
         data = request.jsonrequest
-        if set(data) != set(self.expected_keys):
-            _logger.error("wrong data format: %s", data)
-            raise ValueError("the data format is incorrect")
-        _logger.info("received %s", data)
+        _logger.info(f"/measurement, data received: {data}")
+
+        env = request.env(su=True)
+        zippcube = env["zippcube.device"].search(
+            [("name", "=", zippcube_device_name)], limit=1
+        )
+        if not zippcube:
+            raise MissingError(
+                _(f"No such Zippcube with name {zippcube_device_name}.")
+            )
+
+        keys_missing = set(self.expected_keys) - set(data)
+        if keys_missing:
+            error_msg = _(f"Wrong data format: {data}. Keys missing: {keys_missing}.")
+            _logger.error(error_msg)
+            raise ValueError(error_msg)
+
         self._check_secret(data["secret"])
         # convert the float values passed as strings to floats
         data = self._convert_floats(data)
-        cubiscan._update_packaging_measures(data)
+        zippcube._update_packaging_measures(data)
         return True
 
     def _convert_floats(self, data):
@@ -44,12 +57,12 @@ class ZipcubeController(http.Controller):
         return data
 
     def _check_secret(self, secret):
-        if secret and secret == os.environ.get("ZIPCUBE_SECRET"):
+        if secret and secret == os.environ.get("ZIPPCUBE_SECRET"):
             return True
         else:
             _logger.error(
-                "Zipcube secret mismatch: %r != %r",
+                "Zippcube secret mismatch: %r != %r",
                 secret,
-                os.environ.get("ZIPCUBE_SECRET", ""),
+                os.environ.get("ZIPPCUBE_SECRET", ""),
             )
             raise http.AuthenticationError()
