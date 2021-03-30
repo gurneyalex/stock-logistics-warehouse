@@ -1,16 +1,15 @@
 # Copyright 2021 Camptocamp SA
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html)
-
 from odoo import _, api, fields, models
 
 
-class ZippcubeWizardLine(models.TransientModel):
-    _name = "zippcube.wizard.line"
-    _description = "Zippcube Wizard Line"
+class MeasuringWizardLine(models.TransientModel):
+    _name = "measuring.wizard.line"
+    _description = "measuring Wizard Line"
     _order = "sequence"
 
     scan_requested = fields.Boolean()
-    wizard_id = fields.Many2one("zippcube.wizard")
+    wizard_id = fields.Many2one("measuring.wizard")
     sequence = fields.Integer()
     name = fields.Char("Packaging", readonly=True)
     qty = fields.Float("Quantity")
@@ -31,7 +30,7 @@ class ZippcubeWizardLine(models.TransientModel):
     packaging_id = fields.Many2one(
         "product.packaging", string="Packaging (rel)", readonly=True
     )
-    packaging_type_id = fields.Many2one("product.packaging.type", readonly=True,)
+    packaging_type_id = fields.Many2one("product.packaging.type", readonly=True)
     required = fields.Boolean(related="packaging_type_id.required", readonly=True)
 
     @api.depends("lngth", "width", "height")
@@ -39,7 +38,7 @@ class ZippcubeWizardLine(models.TransientModel):
         for line in self:
             line.volume = (line.lngth * line.width * line.height) / 1000.0 ** 3
 
-    def zippcube_select_for_measure(self):
+    def measuring_select_for_measure(self):
         """Current line has been selected for measurement
 
         This implies that the device is acquired and locked,
@@ -55,15 +54,16 @@ class ZippcubeWizardLine(models.TransientModel):
 
         if success:
             self.scan_requested = True
-            self.env["product.packaging"]._acquire_measuring_device()
-            self.packaging_id._assign_measuring_device(self.wizard_id.device_id)
+            device = self.wizard_id.device_id
+            self.env["product.packaging"]._acquire_measuring_device(device)
+            self.packaging_id._assign_measuring_device(device)
         return success
 
-    def zippcube_select_for_measure_cancel(self):
+    def measuring_select_for_measure_cancel(self):
         """Current line has been de-selected for measurement
 
         This implies that the packaging clears is assigned device."""
         self.ensure_one()
         self.scan_requested = False
-        self.packaging_id._clear_measuring_device()
+        self.packaging_id._release_measuring_device(self.wizard_id.device_id)
         return True

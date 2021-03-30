@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="view_zippcube_wizard" model="ir.ui.view">
-        <field name="name">zippcube.wizard.form</field>
-        <field name="model">zippcube.wizard</field>
+    <record id="view_measuring_wizard" model="ir.ui.view">
+        <field name="name">measuring.wizard.form</field>
+        <field name="model">measuring.wizard</field>
         <field name="arch" type="xml">
-            <form class="zippcube_wizard">
+            <form class="measuring_wizard">
                 <header>
                     <button
                         name="action_reopen_fullscreen"
@@ -74,13 +74,13 @@
                             options="{'bg_color': 'lightcoral: volume == 0.0 and required'}"
                         />
                         <button
-                            name="zippcube_select_for_measure"
+                            name="measuring_select_for_measure"
                             type="object"
                             string="Scan"
                             class="btn btn-warning"
                         />
                         <button
-                            name="zippcube_select_for_measure_cancel"
+                            name="measuring_select_for_measure_cancel"
                             type="object"
                             string="Cancel Scan"
                             class="btn btn-danger"

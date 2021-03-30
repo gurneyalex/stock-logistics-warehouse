@@ -40,10 +40,4 @@
         <field name="res_model">zippcube.device</field>
         <field name="view_mode">tree,form</field>
     </record>
-    <menuitem
-        action="action_zippcube_device_form"
-        id="menu_action_zippcube_device_form"
-        parent="stock.menu_warehouse_config"
-        sequence="2"
-    />
 </odoo>

@@ -25,12 +25,12 @@ class StockReceptionScreen(models.Model):
         store=True,
     )
 
-    @api.depends("product_packaging_id", "product_packaging_id.scan_device_id")
+    @api.depends("product_packaging_id", "product_packaging_id.zippcube_device_id")
     def _compute_scan_requested(self):
         for record in self:
             record.scan_requested = (
                 record.product_packaging_id
-                and record.product_packaging_id.scan_device_id
+                and record.product_packaging_id.zippcube_device_id
             )
 
     @api.depends(
@@ -65,13 +65,17 @@ class StockReceptionScreen(models.Model):
             self._notify(error_msg)
             return UserError(error_msg)
 
-        self.env["product.packaging"]._acquire_measuring_device()
+        self.env["product.packaging"]._acquire_measuring_device(device)
         self.product_packaging_id._assign_measuring_device(device)
         return True
 
     def cancel_measure_current_packaging(self):
         self.ensure_one()
-        self.product_packaging_id._clear_measuring_device()
+        device = self.env["zippcube.device"].search(
+            [("is_default", "=", True)], limit=1
+        )
+        if device:
+            self.product_packaging_id._release_measuring_device(device)
         return True
 
     def _notify(self, message):

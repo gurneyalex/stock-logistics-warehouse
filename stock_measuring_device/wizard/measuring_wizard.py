@@ -1,18 +1,26 @@
 # Copyright 2021 Camptocamp SA
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html)
-
 from odoo import api, fields, models
 
 
-class ZippcubeWizard(models.TransientModel):
-    _name = "zippcube.wizard"
+class MeasuringWizard(models.TransientModel):
+    _name = "measuring.wizard"
     _inherit = "barcodes.barcode_events_mixin"
-    _description = "Zippcube Wizard"
+    _description = "measuring Wizard"
     _rec_name = "device_id"
 
-    device_id = fields.Many2one("zippcube.device", readonly=True)
     product_id = fields.Many2one("product.product", domain=[("type", "=", "product")])
-    line_ids = fields.One2many("zippcube.wizard.line", "wizard_id")
+    line_ids = fields.One2many("measuring.wizard.line", "wizard_id")
+    device_id = fields.Reference(
+        string="Specific Measuring Device",
+        selection="_select_device_id",
+        readonly=True,
+    )
+
+    @api.model
+    def _select_device_id(self):
+        """Retrieve available specific devices"""
+        return []
 
     @api.onchange("product_id")
     def onchange_product_id(self):
@@ -20,7 +28,7 @@ class ZippcubeWizard(models.TransientModel):
             to_create = []
             to_create += self._prepare_unit_line()
             to_create += self._prepare_packaging_lines()
-            recs = self.env["zippcube.wizard.line"].create(to_create)
+            recs = self.env["measuring.wizard.line"].create(to_create)
             self.line_ids = recs
         else:
             self.line_ids = [(5, 0, 0)]
@@ -37,7 +45,7 @@ class ZippcubeWizard(models.TransientModel):
             "height": self.product_id.product_height,
         }
         product_dimension_uom = self.product_id.dimensional_uom_id
-        mm_uom = self.env.ref("stock_measuring_device_zippcube.product_uom_mm")
+        mm_uom = self.env.ref("stock_measuring_device.product_uom_mm")
         if mm_uom != product_dimension_uom:
             vals.update(
                 {
@@ -56,9 +64,10 @@ class ZippcubeWizard(models.TransientModel):
 
     def _prepare_packaging_lines(self):
         vals_list = []
+        product_packaging = self.env["product.packaging"]
         packaging_types = self.env["product.packaging.type"].search([])
         for seq, pack_type in enumerate(packaging_types):
-            pack = self.env["product.packaging"].search(
+            pack = product_packaging.search(
                 [
                     ("product_id", "=", self.product_id.id),
                     ("packaging_type_id", "=", pack_type.id),
@@ -94,7 +103,6 @@ class ZippcubeWizard(models.TransientModel):
         return vals_list
 
     def action_reopen_fullscreen(self):
-        # Action to reopen wizard in fullscreen (e.g. after page refresh)
         self.ensure_one()
         res = self.device_id.open_wizard()
         res["res_id"] = self.id
@@ -131,7 +139,7 @@ class ZippcubeWizard(models.TransientModel):
                     packaging_ids_list.append((0, 0, vals))
             else:
                 # Handle unit line
-                mm_uom = self.env.ref("stock_measuring_device_zippcube.product_uom_mm")
+                mm_uom = self.env.ref("stock_measuring_device.product_uom_mm")
                 product_vals.update(
                     {
                         "product_length": line.lngth,
@@ -150,17 +158,14 @@ class ZippcubeWizard(models.TransientModel):
 
     def action_close(self):
         self.ensure_one()
-        form_xmlid = "stock_measuring_device_zippcube.action_zippcube_device_form"
-        action = self.env.ref(form_xmlid).read()[0]
-        action.update(
-            {
-                "res_id": self.device_id.id,
-                "target": "main",
-                "views": [(self.env.ref(form_xmlid).id, "form",)],
-                "flags": {"headless": False, "clear_breadcrumbs": True},
-            }
-        )
-        return action
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": self.device_id._name,
+            "res_id": self.device_id.id,
+            "view_mode": "form",
+            "target": "main",
+            "flags": {"headless": False, "clear_breadcrumbs": True},
+        }
 
     def reload(self):
         return {

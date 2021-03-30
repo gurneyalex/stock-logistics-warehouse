@@ -11,6 +11,8 @@ _logger = logging.getLogger(__name__)
 
 
 class ZippcubeController(http.Controller):
+    DEVICE_SECRET_KEY = "ZIPPCUBE_SECRET"
+
     weight_keys = ("weight",)
     measures_keys = ("length", "width", "height")
     expected_keys = ("secret", "barcode") + weight_keys + measures_keys
@@ -22,7 +24,7 @@ class ZippcubeController(http.Controller):
     )
     def measurement(self, zippcube_device_name):
         data = request.jsonrequest
-        _logger.info(f"/measurement, data received: {data}")
+        _logger.info("/measurement, data received: {}".format(data))
 
         env = request.env(su=True)
         zippcube = env["zippcube.device"].search(
@@ -30,12 +32,14 @@ class ZippcubeController(http.Controller):
         )
         if not zippcube:
             raise MissingError(
-                _(f"No such Zippcube with name {zippcube_device_name}.")
+                _("No such Zippcube with name {}.".format(zippcube_device_name))
             )
 
         keys_missing = set(self.expected_keys) - set(data)
         if keys_missing:
-            error_msg = _(f"Wrong data format: {data}. Keys missing: {keys_missing}.")
+            error_msg = _(
+                "Wrong data format: {}. Keys missing: {}.".format(data, keys_missing)
+            )
             _logger.error(error_msg)
             raise ValueError(error_msg)
 
@@ -56,8 +60,11 @@ class ZippcubeController(http.Controller):
                 data[key] = value
         return data
 
+    def _device_get_secret(self):
+        return os.environ.get(self.DEVICE_SECRET_KEY)
+
     def _check_secret(self, secret):
-        if secret and secret == os.environ.get("ZIPPCUBE_SECRET"):
+        if secret and secret == self._device_get_secret():
             return True
         else:
             _logger.error(
