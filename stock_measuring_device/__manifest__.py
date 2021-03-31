@@ -8,6 +8,7 @@
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "depends": [
+        "component",
         "barcodes",
         "stock",
         "web_tree_dynamic_colored_field",
@@ -22,6 +23,7 @@
         "security/ir.model.access.csv",
         "data/uom.xml",
         "views/assets.xml",
+        "views/measuring_device_view.xml",
         "wizard/measuring_wizard.xml",
         "views/menu.xml",
     ],

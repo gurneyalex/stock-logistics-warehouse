@@ -65,17 +65,13 @@ class StockReceptionScreen(models.Model):
             self._notify(error_msg)
             return UserError(error_msg)
 
-        self.env["product.packaging"]._acquire_measuring_device(device)
+        self.env["product.packaging"]._acquire_measuring_device()
         self.product_packaging_id._assign_measuring_device(device)
         return True
 
     def cancel_measure_current_packaging(self):
         self.ensure_one()
-        device = self.env["zippcube.device"].search(
-            [("is_default", "=", True)], limit=1
-        )
-        if device:
-            self.product_packaging_id._release_measuring_device(device)
+        self.product_packaging_id._release_measuring_device()
         return True
 
     def _notify(self, message):

@@ -1,9 +1,0 @@
-<?xml version="1.0" ?>
-<odoo>
-    <menuitem
-        action="action_zippcube_device_form"
-        id="menu_action_zippcube_device_form"
-        parent="stock_measuring_device.menu_measuring_device"
-        sequence="100"
-    />
-</odoo>

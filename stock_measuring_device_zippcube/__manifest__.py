@@ -9,11 +9,7 @@
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "depends": ["stock_measuring_device"],
-    "data": [
-        "security/ir.model.access.csv",
-        "views/zippcube_device_view.xml",
-        "views/menu.xml",
-    ],
+    "data": [],
     "website": "https://github.com/OCA/stock-logistics-warehouse",
     "installable": True,
     "development_status": "Alpha",

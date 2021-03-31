@@ -55,7 +55,7 @@ class MeasuringWizardLine(models.TransientModel):
         if success:
             self.scan_requested = True
             device = self.wizard_id.device_id
-            self.env["product.packaging"]._acquire_measuring_device(device)
+            self.env["product.packaging"]._acquire_measuring_device()
             self.packaging_id._assign_measuring_device(device)
         return success
 
@@ -65,5 +65,5 @@ class MeasuringWizardLine(models.TransientModel):
         This implies that the packaging clears is assigned device."""
         self.ensure_one()
         self.scan_requested = False
-        self.packaging_id._release_measuring_device(self.wizard_id.device_id)
+        self.packaging_id._release_measuring_device()
         return True

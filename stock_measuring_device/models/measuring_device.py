@@ -2,14 +2,14 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html)
 import logging
 
-from odoo import _, fields, models
-from odoo.exceptions import UserError
+from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 
 
-class MeasuringDevice(models.AbstractModel):
+class MeasuringDevice(models.Model):
     _name = "measuring.device"
+    _inherit = "collection.base"
     _description = "Measuring and Weighing Device"
     _order = "warehouse_id, name"
 
@@ -25,23 +25,31 @@ class MeasuringDevice(models.AbstractModel):
         ),
     ]
 
-    def _validate_packaging(self, packaging):
+    def _forward(self, method, *args, **kwargs):
+        _logger.debug(
+            "Measuring Device ID: %s type %s > %s : %s %s",
+            self.id,
+            self.device_type,
+            method,
+            args,
+            kwargs,
+        )
         self.ensure_one()
-        if len(packaging) == 0:
-            error_msg = _(
-                "No package found pending a scan by this device {}. "
-                "This could mean the selected product does not have this "
-                "kind of package set.".format(self.name)
-            )
-            _logger.error(error_msg)
-            raise UserError(error_msg)
+        measuring_device = self._get_measuring_device()
+        return getattr(measuring_device, method)(*args, **kwargs)
 
-        elif len(packaging) > 1:
-            warning_msg = _(
-                "Several packagings ({}) found to update by "
-                "device {}. Will update the first: {}".format(
-                    packaging, self.name, packaging[0]
-                )
-            )
-            _logger.warning(warning_msg)
-        return True
+    def _get_measuring_device(self):
+        with self.work_on(self._name) as work:
+            return work.component(usage=self.device_type)
+
+    def open_wizard(self):
+        with self.work_on(self._name) as work:
+            return work.component(usage=self.device_type)
+
+    # def _is_being_used(self):
+    #     with self.work_on(self._name) as work:
+    #         return work.component(usage=self.device_type)
+    #
+    # def _validate_packaging(self, packaging):
+    #     with self.work_on(self._name) as work:
+    #         return work.component(usage=self.device_type)

@@ -2,7 +2,7 @@
 <odoo>
     <menuitem
         id="menu_measuring_device"
-        name="Measuring Devices"
+        action="action_measuring_device_form"
         parent="stock.menu_warehouse_config"
         sequence="100"
     />

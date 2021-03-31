@@ -11,11 +11,7 @@ class MeasuringWizard(models.TransientModel):
 
     product_id = fields.Many2one("product.product", domain=[("type", "=", "product")])
     line_ids = fields.One2many("measuring.wizard.line", "wizard_id")
-    device_id = fields.Reference(
-        string="Specific Measuring Device",
-        selection="_select_device_id",
-        readonly=True,
-    )
+    device_id = fields.Many2one("measuring.device", readonly=True)
 
     @api.model
     def _select_device_id(self):

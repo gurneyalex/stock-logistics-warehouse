@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <odoo>
-    <record model="ir.ui.view" id="view_zippcube_device_form">
-        <field name="name">zippcube.device.form</field>
-        <field name="model">zippcube.device</field>
+    <record model="ir.ui.view" id="view_measuring_device_form">
+        <field name="name">measuring.device.form</field>
+        <field name="model">measuring.device</field>
         <field name="arch" type="xml">
             <form>
                 <header>
@@ -14,30 +14,31 @@
                     />
                 </header>
                 <sheet>
-                    <field name="id" invisible="1" />
                     <group>
                         <group name="device">
                             <field name="name" />
                             <field name="warehouse_id" />
+                            <field name="device_type" />
                         </group>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
-    <record model="ir.ui.view" id="view_zippcube_device_tree">
-        <field name="name">zippcube.device.tree</field>
-        <field name="model">zippcube.device</field>
+    <record model="ir.ui.view" id="view_measuring_device_tree">
+        <field name="name">measuring.device.tree</field>
+        <field name="model">measuring.device</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
                 <field name="warehouse_id" />
+                <field name="device_type" />
             </tree>
         </field>
     </record>
-    <record id="action_zippcube_device_form" model="ir.actions.act_window">
-        <field name="name">Zippcube Devices</field>
-        <field name="res_model">zippcube.device</field>
+    <record id="action_measuring_device_form" model="ir.actions.act_window">
+        <field name="name">Measuring Devices</field>
+        <field name="res_model">measuring.device</field>
         <field name="view_mode">tree,form</field>
     </record>
 </odoo>

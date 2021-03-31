@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_zippcube_device_inventory_manager,zippcube.device.inventory.manager,stock_measuring_device_zippcube.model_zippcube_device,stock.group_stock_manager,1,1,1,1
-access_zippcube_device_inventory_user,zippcube.device.inventory.user,stock_measuring_device_zippcube.model_zippcube_device,stock.group_stock_user,1,0,0,0

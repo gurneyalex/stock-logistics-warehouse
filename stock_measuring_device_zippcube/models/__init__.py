@@ -1,3 +1,3 @@
-from . import product_packaging
-from . import zippcube_device
-from . import stock_warehouse
+# Copyright 2021 Camptocamp SA
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html)
+from . import measuring_device
